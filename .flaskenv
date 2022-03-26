@@ -1,1 +1,2 @@
 FLASK_APP=gbgames.py
+FLASK_ENV=development

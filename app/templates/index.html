@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for jogo in jogos %}
+    <dir><p>{{ jogo.nome }} - {{ jogo.categoria }}</p></dir>
+    {% endfor %}
+{% endblock %}
