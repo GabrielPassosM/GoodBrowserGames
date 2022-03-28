@@ -5,6 +5,7 @@ from app.forms import CadastroJogoForm, FiltrarPorNomeForm, FiltrarPorCategoriaF
 from app.models import Jogo
 
 
+@app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
 def index():
     jogos = Jogo.query.all()
