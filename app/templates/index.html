@@ -3,13 +3,39 @@
 {% block content %}
     <div id="container">
         {% for jogo in jogos %}
-        <dir><p>{{ jogo.nome }} - {{ jogo.categoria }}</p></dir>
+        <div class="jogo">
+            <h2>{{ jogo.nome }}</h2>
+            <p><b>Categoria:</b> {{ jogo.categoria }}</p>
+            <p><b>URL jogo:</b> {{ jogo.url_jogo }}</p>
+            <p><b>URL video:</b> {{ jogo.url_video }}</p>
+            <p><b>URL imagem:</b> {{ jogo.url_imagem }}</p>
+            <p><b>Descrição:</b> {{ jogo.descricao }}</p>
+            <p class="botoes"><a href="">Editar</a></p>
+            <p class="botoes"><a href="/delete-jogo/{{jogo.id}}">Excluir</a></p>
+        </div>
         {% endfor %}
     </div>
 
     <style>
-        #container {
-            border: 1px solid red;
+
+        .jogo {
+            border: 1px solid green;
+            display: inline-block;
+            max-width: 300px;
+            margin: 10px;
+            padding: 5px;
+            text-align: center;
         }
+
+        .jogo h2 {
+            color: red;
+        }
+
+        .botoes {
+            display: inline;
+            width: 48%;
+            margin: 5px;
+        }
+
     </style>
 {% endblock %}

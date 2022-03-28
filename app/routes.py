@@ -36,3 +36,11 @@ def cadastrar_jogo():
         flash(f"Jogo {nome} cadastrado!")
         return redirect(url_for("index"))
     return render_template("cadastro_jogo.html", form=form)
+
+
+@app.route("/delete-jogo/<id>")
+def delete_jogo(id):
+    jogo = Jogo.query.filter_by(id=id).first_or_404()
+    db.session.delete(jogo)
+    db.session.commit()
+    return redirect(url_for("index"))
