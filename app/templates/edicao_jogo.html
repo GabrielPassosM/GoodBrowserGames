@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="container">
+        <h1>Editando Jogo <p id="nome_jogo">"{{ nome_jogo }}"</p></h1>
+        <form action="" method="post" novalidate>
+            <p>
+                {{ form.nome.label }}<br>
+                {{ form.nome(size=32) }}<br>
+                {% for error in form.nome.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.categoria.label }}<br>
+                {{ form.categoria }}<br>
+                {% for error in form.categoria.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.url_jogo.label }}<br>
+                {{ form.url_jogo(size=32) }}<br>
+                {% for error in form.url_jogo.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.url_video.label }}<br>
+                {{ form.url_video(size=32) }}<br>
+                {% for error in form.url_video.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.descricao.label }}<br>
+                {{ form.descricao(size=32) }}<br>
+                {% for error in form.descricao.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.url_imagem.label }}<br>
+                {{ form.url_imagem(size=32) }}<br>
+                {% for error in form.url_imagem.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+
+    <style>
+        #container {
+            text-align: center;
+        }
+
+        #nome_jogo {
+            color: red;
+        }
+    </style>
+{% endblock %}

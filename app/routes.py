@@ -1,15 +1,27 @@
 from flask import render_template, flash, redirect, request
 from flask.helpers import url_for
 from app import app, db
-from app.forms import CadastroJogoForm
+from app.forms import CadastroJogoForm, FiltrarPorNomeForm, FiltrarPorCategoriaForm
 from app.models import Jogo
 
 
-@app.route("/")
 @app.route("/index", methods=["GET", "POST"])
 def index():
     jogos = Jogo.query.all()
-    return render_template("index.html", jogos=jogos)
+    form_nome = FiltrarPorNomeForm()
+    form_cat = FiltrarPorCategoriaForm()
+    if request.method == "POST":
+        nome = form_nome.nome.data
+        categoria = form_cat.categoria.data
+        if nome:
+            jogos_filtrados = Jogo.query.filter_by(nome=nome)
+        elif categoria:
+            jogos_filtrados = Jogo.query.filter_by(categoria=categoria)
+        
+        if jogos_filtrados:
+            jogos = jogos_filtrados
+
+    return render_template("index.html", form_nome=form_nome, form_cat=form_cat, jogos=jogos)
 
 
 @app.route("/cadastrar-jogo", methods=["GET", "POST"])
@@ -44,3 +56,22 @@ def delete_jogo(id):
     db.session.delete(jogo)
     db.session.commit()
     return redirect(url_for("index"))
+
+
+@app.route("/editar-jogo/<id>", methods=["GET", "POST"])
+def editar_jogo(id):
+    jogo = Jogo.query.filter_by(id=id).first_or_404()
+    form = CadastroJogoForm()
+    if request.method == "POST":
+        jogo.nome = form.nome.data
+        jogo.categoria = form.categoria.data
+        jogo.url_jogo = form.url_jogo.data
+        jogo.url_video = form.url_video.data
+        jogo.url_imagem = form.url_imagem.data
+        jogo.descricao = form.descricao.data
+        
+        db.session.add(jogo)
+        db.session.commit()
+        return redirect(url_for("index"))
+
+    return render_template("edicao_jogo.html", form=form, nome_jogo=jogo.nome)

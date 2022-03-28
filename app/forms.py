@@ -22,3 +22,24 @@ class CadastroJogoForm(FlaskForm):
     descricao = StringField("Descrição", validators=[DataRequired()])
     url_imagem = StringField("URL de imagem ilustrativa", validators=[DataRequired()])
     submit = SubmitField("Cadastrar")
+
+
+class FiltrarPorNomeForm(FlaskForm):
+    nome = StringField("Nome do jogo")
+    submit = SubmitField("Buscar")
+
+
+class FiltrarPorCategoriaForm(FlaskForm):
+    opcoes_de_categorias = [
+        ("strategy", "Strategy"), 
+        ("shooter", "Shooter"),
+        ("puzzle", "Puzzle"),
+        ("arcade", "Arcade"),
+        ("rpg", "RPG"),
+        ("sports", "Sports"),
+        ("action", "Action"),
+        ("adventure", "Adventure"),
+    ]
+
+    categoria = SelectField("Categoria", choices=opcoes_de_categorias)
+    submit = SubmitField("Buscar")

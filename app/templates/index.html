@@ -2,6 +2,23 @@
 
 {% block content %}
     <div id="container">
+        <div id="form">
+            <form action="" method="post" novalidate>
+                <span>
+                    <b>{{ form_nome.nome.label }}:</b> 
+                    {{ form_nome.nome(size=32) }}
+                </span>
+                <span>  {{ form_cat.submit() }}</span>
+
+                 | 
+
+                <span>
+                    <b>{{ form_cat.categoria.label }}:</b> 
+                    {{ form_cat.categoria }}
+                </span>
+                <span>  {{ form_cat.submit() }}</span>
+            </form>
+        </div>
         {% for jogo in jogos %}
         <div class="jogo">
             <h2>{{ jogo.nome }}</h2>
@@ -10,7 +27,7 @@
             <p><b>URL video:</b> {{ jogo.url_video }}</p>
             <p><b>URL imagem:</b> {{ jogo.url_imagem }}</p>
             <p><b>Descrição:</b> {{ jogo.descricao }}</p>
-            <p class="botoes"><a href="">Editar</a></p>
+            <p class="botoes"><a href="/editar-jogo/{{jogo.id}}">Editar</a></p>
             <p class="botoes"><a href="/delete-jogo/{{jogo.id}}">Excluir</a></p>
         </div>
         {% endfor %}
@@ -35,6 +52,12 @@
             display: inline;
             width: 48%;
             margin: 5px;
+        }
+
+        #form {
+            text-align: right;
+            margin: 5px;
+            padding: 5px;
         }
 
     </style>
