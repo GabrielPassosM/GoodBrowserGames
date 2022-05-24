@@ -29,7 +29,7 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Login feito por usuário {}'.format(form.usuario.data))
+        flash('Login feito por usuário {}'.format(form.username.data))
         return redirect('/index')
     return render_template('login.html', title='Entrar', form=form)
 
