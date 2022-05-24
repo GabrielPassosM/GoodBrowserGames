@@ -1,6 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
+from wtforms import StringField, SubmitField, SelectField, PasswordField
 from wtforms.validators import DataRequired
+
+
+class LoginForm(FlaskForm):
+    usuario = StringField('Usuário', validators=[DataRequired()])
+    senha = PasswordField('Senha', validators=[DataRequired()])
+    submit = SubmitField('Entrar')
 
 
 class CadastroJogoForm(FlaskForm):
@@ -21,7 +27,7 @@ class CadastroJogoForm(FlaskForm):
     url_video = StringField("URL vídeo demonstrativo")
     descricao = StringField("Descrição", validators=[DataRequired()])
     url_imagem = StringField("URL de imagem ilustrativa", validators=[DataRequired()])
-    submit = SubmitField("Cadastrar")
+    submit = SubmitField("Salvar")
 
 
 class FiltrarPorNomeForm(FlaskForm):

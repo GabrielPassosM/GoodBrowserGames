@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request
 from flask.helpers import url_for
 from app import app, db
-from app.forms import CadastroJogoForm, FiltrarPorNomeForm, FiltrarPorCategoriaForm
+from app.forms import CadastroJogoForm, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm
 from app.models import Jogo
 
 
@@ -25,6 +25,15 @@ def index():
     return render_template("index.html", form_nome=form_nome, form_cat=form_cat, jogos=jogos)
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash('Login feito por usuário {}'.format(form.usuario.data))
+        return redirect('/index')
+    return render_template('login.html', title='Entrar', form=form)
+
+
 @app.route("/cadastrar-jogo", methods=["GET", "POST"])
 def cadastrar_jogo():
     form = CadastroJogoForm()
@@ -46,7 +55,7 @@ def cadastrar_jogo():
         )
         db.session.add(jogo)
         db.session.commit()
-        flash(f"Jogo {nome} cadastrado!")
+        flash(f"Jogo {nome} cadastrado com sucesso!")
         return redirect(url_for("index"))
     return render_template("cadastro_jogo.html", form=form)
 
@@ -54,17 +63,19 @@ def cadastrar_jogo():
 @app.route("/delete-jogo/<id>")
 def delete_jogo(id):
     jogo = Jogo.query.filter_by(id=id).first_or_404()
+    nome = jogo.nome
     db.session.delete(jogo)
     db.session.commit()
+    flash(f"Jogo {nome} deletado com sucesso!")
     return redirect(url_for("index"))
 
 
 @app.route("/editar-jogo/<id>", methods=["GET", "POST"])
 def editar_jogo(id):
     jogo = Jogo.query.filter_by(id=id).first_or_404()
+    nome = jogo.nome
     form = CadastroJogoForm()
     if request.method == "POST":
-        jogo.nome = form.nome.data
         jogo.categoria = form.categoria.data
         jogo.url_jogo = form.url_jogo.data
         jogo.url_video = form.url_video.data
@@ -73,6 +84,7 @@ def editar_jogo(id):
         
         db.session.add(jogo)
         db.session.commit()
+        flash(f"Jogo {nome} editado com sucesso!")
         return redirect(url_for("index"))
 
     return render_template("edicao_jogo.html", form=form, nome_jogo=jogo.nome)

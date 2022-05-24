@@ -5,13 +5,6 @@
         <h1>Editando Jogo <p id="nome_jogo">"{{ nome_jogo }}"</p></h1>
         <form action="" method="post" novalidate>
             <p>
-                {{ form.nome.label }}<br>
-                {{ form.nome(size=32) }}<br>
-                {% for error in form.nome.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-            <p>
                 {{ form.categoria.label }}<br>
                 {{ form.categoria }}<br>
                 {% for error in form.categoria.errors %}
