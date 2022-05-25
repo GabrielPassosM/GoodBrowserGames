@@ -39,6 +39,11 @@ class Avaliacao(db.Model):
     jogo_id = db.Column(db.Integer, db.ForeignKey('jogo.id'))
 
 
+class Categoria(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(64), index=True, unique=True)
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

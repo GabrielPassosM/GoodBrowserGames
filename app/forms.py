@@ -68,3 +68,8 @@ class FiltrarPorCategoriaForm(FlaskForm):
 
     categoria = SelectField("Categoria", choices=opcoes_de_categorias)
     submit = SubmitField("Buscar")
+
+
+class CriarCategoria(FlaskForm):
+    nome = StringField("Nome da categoria")
+    submit = SubmitField("Salvar")

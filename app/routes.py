@@ -3,8 +3,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from flask.helpers import url_for
 from app import app, db
-from app.forms import CadastroJogoForm, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm, RegistrationForm
-from app.models import Jogo, User
+from app.forms import CadastroJogoForm, CriarCategoria, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm, RegistrationForm
+from app.models import Categoria, Jogo, User
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -72,6 +72,22 @@ def registrar():
         flash('Cadastro realizado com sucesso!')
         return redirect(url_for('login'))
     return render_template('cadastre_se.html', title='Cadastre-se', form=form)
+
+
+@app.route("/criar-categoria", methods=["GET", "POST"])
+def criar_categoria():
+    form = CriarCategoria()
+    if request.method == "POST":
+        nome = form.nome.data
+
+        categoria = Categoria(
+            nome=nome
+        )
+        db.session.add(categoria)
+        db.session.commit()
+        flash(f"Categoria {nome} cadastrada com sucesso!")
+        return redirect(url_for("index"))
+    return render_template("criar_categoria.html", form=form)
 
 
 @app.route("/cadastrar-jogo", methods=["GET", "POST"])
