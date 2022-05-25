@@ -3,7 +3,8 @@
 {% block content %}
     <div id="container">
         <h1>Criar Categoria</h1>
-        <form action="" method="post" novalidate>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
             <p>
                 {{ form.nome.label }}<br>
                 {{ form.nome(size=32) }}<br>

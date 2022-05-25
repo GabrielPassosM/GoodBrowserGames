@@ -1,7 +1,8 @@
+from sre_constants import CATEGORY_DIGIT
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, PasswordField, BooleanField, DateField
 from wtforms.validators import DataRequired, ValidationError, EqualTo
-from app.models import User
+from app.models import Categoria, User
 
 
 class LoginForm(FlaskForm):
@@ -29,6 +30,7 @@ class RegistrationForm(FlaskForm):
 
 
 class CadastroJogoForm(FlaskForm):
+
     opcoes_de_categorias = [
         ("strategy", "Strategy"), 
         ("shooter", "Shooter"),
@@ -39,6 +41,12 @@ class CadastroJogoForm(FlaskForm):
         ("action", "Action"),
         ("adventure", "Adventure"),
     ]
+
+    categorias = list(Categoria.query.all())
+
+    if categorias:
+        for cat in categorias:
+            opcoes_de_categorias.append((cat.nome, cat.nome.capitalize()))
 
     nome = StringField("Nome do jogo", validators=[DataRequired()])
     categoria = SelectField("Categoria", choices=opcoes_de_categorias, validators=[DataRequired()])
@@ -66,10 +74,21 @@ class FiltrarPorCategoriaForm(FlaskForm):
         ("adventure", "Adventure"),
     ]
 
+    categorias = list(Categoria.query.all())
+
+    if categorias:
+        for cat in categorias:
+            opcoes_de_categorias.append((cat.nome, cat.nome.capitalize()))
+
     categoria = SelectField("Categoria", choices=opcoes_de_categorias)
     submit = SubmitField("Buscar")
 
 
 class CriarCategoria(FlaskForm):
-    nome = StringField("Nome da categoria")
+    nome = StringField("Nome da categoria", validators=[DataRequired()])
     submit = SubmitField("Salvar")
+
+    def validate_categoria(self, nome):
+        cat = Categoria.query.filter_by(nome=nome.data.lower()).first()
+        if cat is not None:
+            raise ValidationError('Categoria já existente!')

@@ -78,7 +78,7 @@ def registrar():
 def criar_categoria():
     form = CriarCategoria()
     if request.method == "POST":
-        nome = form.nome.data
+        nome = form.nome.data.lower()
 
         categoria = Categoria(
             nome=nome
