@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="text-align: center;">
+        <h1>Cadastre-se</h1>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}<br>
+                {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.nome_completo.label }}<br>
+                {{ form.nome_completo(size=64) }}<br>
+                {% for error in form.nome_completo.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.data_de_nascimento.label }}<br>
+                {{ form.data_de_nascimento }}<br>
+                {% for error in form.data_de_nascimento.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.pais.label }}<br>
+                {{ form.pais(size=32) }}<br>
+                {% for error in form.pais.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.estado.label }}<br>
+                {{ form.estado(size=32) }}<br>
+                {% for error in form.estado.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.senha.label }}<br>
+                {{ form.senha(size=32) }}<br>
+                {% for error in form.senha.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.senha2.label }}<br>
+                {{ form.senha2(size=32) }}<br>
+                {% for error in form.senha2.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+{% endblock %}

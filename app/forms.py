@@ -1,12 +1,31 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, SelectField, PasswordField, BooleanField, DateField
+from wtforms.validators import DataRequired, ValidationError, EqualTo
+from app.models import User
 
 
 class LoginForm(FlaskForm):
     username = StringField('Usuário', validators=[DataRequired()])
     senha = PasswordField('Senha', validators=[DataRequired()])
+    remember_me = BooleanField('Lembrar de mim')
     submit = SubmitField('Entrar')
+
+
+class RegistrationForm(FlaskForm):
+    username = StringField('Nome de usuário', validators=[DataRequired()])
+    nome_completo = StringField('Nome completo', validators=[DataRequired()])
+    data_de_nascimento = DateField('Data de nascimento', validators=[DataRequired()])
+    pais = StringField('País', validators=[DataRequired()])
+    estado = StringField('Estado', validators=[DataRequired()])
+    senha = PasswordField('Senha', validators=[DataRequired()])
+    senha2 = PasswordField(
+        'Repita a senha', validators=[DataRequired(), EqualTo('senha')])
+    submit = SubmitField('Registrar')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError('Nome de usuário já existente')
 
 
 class CadastroJogoForm(FlaskForm):

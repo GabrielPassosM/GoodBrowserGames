@@ -1,12 +1,15 @@
 from flask import render_template, flash, redirect, request
+from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.urls import url_parse
 from flask.helpers import url_for
 from app import app, db
-from app.forms import CadastroJogoForm, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm
-from app.models import Jogo
+from app.forms import CadastroJogoForm, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm, RegistrationForm
+from app.models import Jogo, User
 
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
+@login_required
 def index():
     jogos = Jogo.query.all()
     form_nome = FiltrarPorNomeForm()
@@ -27,11 +30,48 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.senha.data):
+            flash('Usuário ou senha inválido!')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
         flash('Login feito por usuário {}'.format(form.username.data))
-        return redirect('/index')
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
     return render_template('login.html', title='Entrar', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+@app.route('/registrar', methods=['GET', 'POST'])
+def registrar():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            nome_completo=form.nome_completo.data,
+            data_de_nascimento=form.data_de_nascimento.data,
+            pais=form.pais.data,
+            estado=form.estado.data
+        )
+        user.set_password(form.senha.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Cadastro realizado com sucesso!')
+        return redirect(url_for('login'))
+    return render_template('cadastre_se.html', title='Cadastre-se', form=form)
 
 
 @app.route("/cadastrar-jogo", methods=["GET", "POST"])

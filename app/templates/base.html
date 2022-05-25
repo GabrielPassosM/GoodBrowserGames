@@ -9,7 +9,13 @@
         <div>
             <a href="{{ url_for('index') }}">Home</a> | 
             <a href="{{ url_for('cadastrar_jogo') }}">Cadastrar jogo</a> |
-            <a href="{{ url_for('login') }}">Entrar</a>
+            <span style="position: absolute; right: 50px;">
+                {% if current_user.is_anonymous %}
+                <a href="{{ url_for('login') }}">Entrar</a>
+                {% else %}
+                <a href="{{ url_for('logout') }}">Sair</a>
+                {% endif %}
+            </span>
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}
