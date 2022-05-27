@@ -45,6 +45,12 @@ class Categoria(db.Model):
     nome = db.Column(db.String(64), index=True, unique=True)
 
 
+class VotoUtil(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    avaliacao_id = db.Column(db.Integer, db.ForeignKey('avaliacao.id'))
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

@@ -18,7 +18,14 @@
                     Qtd Útil: {{ avaliacao.qnt_util }}
                 </p>
                 <p style="text-align: left; margin: 10px;">{{ avaliacao.texto }}</p>
-                <p class="botao-util"><a href="/achar-util/{{avaliacao.id}}">Achar útil</a></p>
+
+                {% if avaliacao.id in avals_uteis_ids %}
+                    <p class="botao-util"><a href="/tirar-util/{{avaliacao.id}}">Não é mais útil</a></p>
+                
+                {% else %}
+                    <p class="botao-util"><a href="/achar-util/{{avaliacao.id}}">Achar útil</a></p>
+                
+                {% endif %}
             </div>
             {% endfor %}
         

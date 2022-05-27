@@ -4,7 +4,7 @@ from werkzeug.urls import url_parse
 from flask.helpers import url_for
 from app import app, db
 from app.forms import CadastroJogoForm, CriarCategoria, FazerAvaliacao, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm, RegistrationForm
-from app.models import Avaliacao, Categoria, Jogo, User
+from app.models import Avaliacao, Categoria, Jogo, User, VotoUtil
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -191,6 +191,7 @@ def editar_jogo(id):
 @app.route("/listar-avaliacoes/<id>", methods=["GET", "POST"])
 def listar_avaliacoes(id):
     avaliacoes = list(Avaliacao.query.filter_by(jogo_id=id))
+    avaliacoes_ids = [a.id for a in avaliacoes]
     jogo = Jogo.query.filter_by(id=id).first()
     
     avaliacao_pelo_usuario = Avaliacao.query.filter_by(jogo_id=id, user_id=current_user.id).first()
@@ -198,8 +199,14 @@ def listar_avaliacoes(id):
         avaliacao_feita = avaliacao_pelo_usuario
     else:
         avaliacao_feita = None
+    
+    
+    user_id_expression = VotoUtil.user_id.in_([current_user.id])
+    in_expression = VotoUtil.avaliacao_id.in_(avaliacoes_ids)
+    votos_util_usuario = list(VotoUtil.query.filter(user_id_expression, in_expression))
+    ids_avaliacoes_uteis_usuario = [v.avaliacao_id for v in votos_util_usuario]
 
-    return render_template("lista_avaliacoes.html", avaliacoes=avaliacoes, jogo=jogo, avaliacao_feita=avaliacao_feita)
+    return render_template("lista_avaliacoes.html", avaliacoes=avaliacoes, jogo=jogo, avaliacao_feita=avaliacao_feita, avals_uteis_ids=ids_avaliacoes_uteis_usuario)
 
 
 @app.route("/fazer-avaliacao/<jogo_id>", methods=["GET", "POST"])
@@ -245,6 +252,26 @@ def editar_avaliacao(id, jogo):
 def achar_util(id):
     avaliacao = Avaliacao.query.filter_by(id=id).first()
     avaliacao.qnt_util += 1
+
+    util = VotoUtil(
+        user_id=current_user.id,
+        avaliacao_id=id
+    )
+
     db.session.add(avaliacao)
+    db.session.add(util)
+    db.session.commit()
+    return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
+
+
+@app.route("/tirar-util/<aval_id>", methods=["GET", "POST"])
+def tirar_util(aval_id):
+    avaliacao = Avaliacao.query.filter_by(id=aval_id).first()
+    avaliacao.qnt_util -= 1
+
+    util = VotoUtil.query.filter_by(avaliacao_id=aval_id, user_id=current_user.id).first()
+
+    db.session.add(avaliacao)
+    db.session.delete(util)
     db.session.commit()
     return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
