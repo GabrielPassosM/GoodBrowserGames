@@ -10,7 +10,8 @@
             <a href="{{ url_for('index') }}">Home</a> | 
             <a href="{{ url_for('cadastrar_jogo') }}">Cadastrar jogo</a> |
             <a href="{{ url_for('listar_categorias') }}">Categorias</a> |
-            <a href="{{ url_for('avaliacoes_mais_uteis') }}">Avaliações mais úteis</a>
+            <a href="{{ url_for('avaliacoes_mais_uteis') }}">Avaliações mais úteis</a> |
+            <a href="{{ url_for('recomendacoes') }}">Recomendações para você</a>
             <span style="position: absolute; right: 50px;">
                 {% if current_user.is_anonymous %}
                 <a href="{{ url_for('login') }}">Entrar</a>

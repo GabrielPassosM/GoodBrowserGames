@@ -51,6 +51,12 @@ class VotoUtil(db.Model):
     avaliacao_id = db.Column(db.Integer, db.ForeignKey('avaliacao.id'))
 
 
+class JogoAvaliado(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    jogo_id = db.Column(db.Integer, db.ForeignKey('jogo.id'))
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

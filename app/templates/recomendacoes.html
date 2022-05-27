@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="text-align: center;">
+        <h1 style="margin-bottom: 50px;">Jogos recomendados para você</h1>
+        {% if jogos_recomendados %}
+            {% for jogo in jogos_recomendados %}
+            <div class="jogo">
+                <h2>{{ jogo.nome }}</h2>
+                <p><b>Categoria:</b> {{ jogo.categoria }}</p>
+                <p><b>URL jogo:</b> {{ jogo.url_jogo }}</p>
+                <p><b>URL video:</b> {{ jogo.url_video }}</p>
+                <p><b>URL imagem:</b> {{ jogo.url_imagem }}</p>
+                <p><b>Descrição:</b> {{ jogo.descricao }}</p>
+                <p class="botoes"><a href="/editar-jogo/{{jogo.id}}">Editar</a></p>
+                <p class="botoes"><a href="/delete-jogo/{{jogo.id}}">Excluir</a></p>
+                <p class="botoes"><a href="/listar-avaliacoes/{{jogo.id}}">Avaliações</a></p>
+            </div>
+            {% endfor %}
+        
+        {% else %}
+            <h2 style="color: red;">Não foi possível te recomendar nenhum jogo :(</h2>
+            <h2>Tente avaliar mais jogos que gostou!</h2>
+        {% endif %}
+    </div>
+
+    <style>
+
+        .jogo {
+            border: 1px solid green;
+            display: inline-block;
+            max-width: 300px;
+            margin: 10px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .jogo h2 {
+            color: red;
+        }
+
+        .botoes {
+            display: inline;
+            width: 48%;
+            margin: 5px;
+        }
+
+        #form {
+            text-align: right;
+            margin: 5px;
+            padding: 5px;
+        }
+
+    </style>
+{% endblock %}

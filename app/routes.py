@@ -4,7 +4,8 @@ from werkzeug.urls import url_parse
 from flask.helpers import url_for
 from app import app, db
 from app.forms import CadastroJogoForm, CriarCategoria, FazerAvaliacao, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm, RegistrationForm
-from app.models import Avaliacao, Categoria, Jogo, User, VotoUtil
+from app.models import Avaliacao, Categoria, Jogo, JogoAvaliado, User, VotoUtil
+import operator
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -225,7 +226,14 @@ def fazer_avaliacao(jogo_id):
             user_id=user_id,
             jogo_id=jogo_id
         )
+
+        jogo_avaliado = JogoAvaliado(
+            user_id=user_id,
+            jogo_id=jogo_id
+        )
+
         db.session.add(avaliacao)
+        db.session.add(jogo_avaliado)
         db.session.commit()
         flash(f"Avaliação feita com sucesso!")
         return redirect(url_for("listar_avaliacoes", id=jogo_id))
@@ -304,3 +312,33 @@ def avaliacoes_mais_uteis():
 
 
     return render_template("avaliacoes_mais_uteis.html", avals_e_jogos=avals_e_jogos, avals_uteis_ids=ids_avaliacoes_uteis_usuario)
+
+
+@app.route("/recomendacoes", methods=["GET", "POST"])
+def recomendacoes():
+    jogos_avaliados = list(JogoAvaliado.query.filter_by(user_id=current_user.id))
+    ids_jogos_avaliados = [j.jogo_id for j in jogos_avaliados]
+
+    jogos_recomendados = []
+    categorias_avaliadas = {}
+    if jogos_avaliados:
+        # try:
+        for jogo_avaliado in jogos_avaliados:
+            jogo = Jogo.query.filter_by(id=jogo_avaliado.jogo_id).first()
+            cat = jogo.categoria
+            qnt_avaliacoes = categorias_avaliadas.get(cat, None)
+            if qnt_avaliacoes:
+                qnt_avaliacoes += 1
+                categorias_avaliadas[cat] = qnt_avaliacoes
+            else:
+                categorias_avaliadas[cat] = 1
+        
+        categoria_preferida = max(categorias_avaliadas.items(), key=operator.itemgetter(1))[0]
+        todos_jogos_cat_preferida = list(Jogo.query.filter_by(categoria=categoria_preferida))
+        for jogo in todos_jogos_cat_preferida:
+            if jogo.id not in ids_jogos_avaliados:
+                jogos_recomendados.append(jogo)
+        # except:
+            # pass
+    
+    return render_template("recomendacoes.html", jogos_recomendados=jogos_recomendados)
