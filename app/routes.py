@@ -270,6 +270,7 @@ def achar_util(aval_id, page):
     db.session.add(avaliacao)
     db.session.add(util)
     db.session.commit()
+    flash(f"avaliação marcada como útil")
     if page == "1":
         return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
     else:
@@ -286,7 +287,7 @@ def tirar_util(aval_id, page):
     db.session.add(avaliacao)
     db.session.delete(util)
     db.session.commit()
-    
+    flash(f"avaliação retirada como útil")
     if page == "1":
         return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
     else:
