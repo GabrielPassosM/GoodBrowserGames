@@ -191,20 +191,21 @@ def editar_jogo(id):
 @app.route("/listar-avaliacoes/<id>", methods=["GET", "POST"])
 def listar_avaliacoes(id):
     avaliacoes = list(Avaliacao.query.filter_by(jogo_id=id))
-    avaliacoes_ids = [a.id for a in avaliacoes]
     jogo = Jogo.query.filter_by(id=id).first()
+
+    ids_avaliacoes_uteis_usuario = None
+    if avaliacoes:
+        avaliacoes_ids = [a.id for a in avaliacoes]
+        user_id_expression = VotoUtil.user_id.in_([current_user.id])
+        in_expression = VotoUtil.avaliacao_id.in_(avaliacoes_ids)
+        votos_util_usuario = list(VotoUtil.query.filter(user_id_expression, in_expression))
+        ids_avaliacoes_uteis_usuario = [v.avaliacao_id for v in votos_util_usuario]
     
     avaliacao_pelo_usuario = Avaliacao.query.filter_by(jogo_id=id, user_id=current_user.id).first()
     if avaliacao_pelo_usuario:
         avaliacao_feita = avaliacao_pelo_usuario
     else:
         avaliacao_feita = None
-    
-    
-    user_id_expression = VotoUtil.user_id.in_([current_user.id])
-    in_expression = VotoUtil.avaliacao_id.in_(avaliacoes_ids)
-    votos_util_usuario = list(VotoUtil.query.filter(user_id_expression, in_expression))
-    ids_avaliacoes_uteis_usuario = [v.avaliacao_id for v in votos_util_usuario]
 
     return render_template("lista_avaliacoes.html", avaliacoes=avaliacoes, jogo=jogo, avaliacao_feita=avaliacao_feita, avals_uteis_ids=ids_avaliacoes_uteis_usuario)
 
@@ -231,8 +232,8 @@ def fazer_avaliacao(jogo_id):
     return render_template("fazer_avaliacao.html", form=form, jogo=jogo)
 
 
-@app.route("/editar-avaliacao/<id>", methods=["GET", "POST"])
-def editar_avaliacao(id, jogo):
+@app.route("/editar-avaliacao/<id>/", methods=["GET", "POST"])
+def editar_avaliacao(id):
     avaliacao = Avaliacao.query.filter_by(id=id).first_or_404()
     jogo = Jogo.query.filter_by(id=avaliacao.jogo_id).first()
     form = FazerAvaliacao()
@@ -248,24 +249,27 @@ def editar_avaliacao(id, jogo):
     return render_template("edicao_avaliacao.html", form=form, nome_jogo=jogo.nome)
 
 
-@app.route("/achar-util/<id>", methods=["GET", "POST"])
-def achar_util(id):
-    avaliacao = Avaliacao.query.filter_by(id=id).first()
+@app.route("/achar-util/<aval_id>/<page>", methods=["GET", "POST"])
+def achar_util(aval_id, page):
+    avaliacao = Avaliacao.query.filter_by(id=aval_id).first()
     avaliacao.qnt_util += 1
 
     util = VotoUtil(
         user_id=current_user.id,
-        avaliacao_id=id
+        avaliacao_id=aval_id
     )
 
     db.session.add(avaliacao)
     db.session.add(util)
     db.session.commit()
-    return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
+    if page == "1":
+        return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
+    else:
+        return redirect(url_for("avaliacoes_mais_uteis"))
 
 
-@app.route("/tirar-util/<aval_id>", methods=["GET", "POST"])
-def tirar_util(aval_id):
+@app.route("/tirar-util/<aval_id>/<page>", methods=["GET", "POST"])
+def tirar_util(aval_id, page):
     avaliacao = Avaliacao.query.filter_by(id=aval_id).first()
     avaliacao.qnt_util -= 1
 
@@ -274,4 +278,29 @@ def tirar_util(aval_id):
     db.session.add(avaliacao)
     db.session.delete(util)
     db.session.commit()
-    return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
+    
+    if page == "1":
+        return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))
+    else:
+        return redirect(url_for("avaliacoes_mais_uteis"))
+
+
+@app.route("/avaliacoes-mais-uteis", methods=["GET", "POST"])
+def avaliacoes_mais_uteis():
+    avaliacoes = list(Avaliacao.query.order_by(Avaliacao.qnt_util.desc()))
+
+    avals_e_jogos = {}
+    ids_avaliacoes_uteis_usuario = None
+    if avaliacoes:
+        avaliacoes_ids = [a.id for a in avaliacoes]
+        user_id_expression = VotoUtil.user_id.in_([current_user.id])
+        in_expression = VotoUtil.avaliacao_id.in_(avaliacoes_ids)
+        votos_util_usuario = list(VotoUtil.query.filter(user_id_expression, in_expression))
+        ids_avaliacoes_uteis_usuario = [v.avaliacao_id for v in votos_util_usuario]
+
+        for aval in avaliacoes:
+            jogo = Jogo.query.filter_by(id=aval.jogo_id).first()
+            avals_e_jogos[aval] = jogo.nome
+
+
+    return render_template("avaliacoes_mais_uteis.html", avals_e_jogos=avals_e_jogos, avals_uteis_ids=ids_avaliacoes_uteis_usuario)

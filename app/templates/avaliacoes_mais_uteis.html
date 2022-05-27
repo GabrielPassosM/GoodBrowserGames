@@ -2,35 +2,29 @@
 
 {% block content %}
     <div id="container">
-        <h1 style="margin-bottom: 50px;">Avaliações de {{ jogo.nome }}</h1>
-        <div>
-            {% if avaliacao_feita %}
-                <p style="margin-bottom: 40px; font-size: large;"><a href="/editar-avaliacao/{{avaliacao_feita.id}}">Editar avaliação</a></p>
-            {% else %}
-                <p style="margin-bottom: 40px; font-size: large;"><a href="/fazer-avaliacao/{{jogo.id}}">Adicionar avaliação</a></p>
-            
-            {% endif %}
-        </div>
-        {% if avaliacoes %}
-            {% for avaliacao in avaliacoes %}
+        <h1 style="margin-bottom: 50px;">Avaliações mais úteis</h1>
+        {% if avals_e_jogos %}
+            {% for avaliacao, nome_jogo in avals_e_jogos.items() %}
             <div class="box-avaliacao">
-                <p>Estrelas: <span style="color: yellow; margin-right: 20px;">{{ avaliacao.estrelas }}</span>
+                <p>
+                    <span style="color: red; margin-right: 20px;">Jogo: {{ nome_jogo }}</span>
+                    Estrelas: <span style="color: yellow; margin-right: 20px;">{{ avaliacao.estrelas }}</span>
                     Qtd Útil: {{ avaliacao.qnt_util }}
                 </p>
                 <p style="text-align: left; margin: 10px;">{{ avaliacao.texto }}</p>
 
                 {% if avaliacao.id in avals_uteis_ids %}
-                    <p class="botao-util"><a href="/tirar-util/{{avaliacao.id}}/1">Não é mais útil</a></p>
+                    <p class="botao-util"><a href="/tirar-util/{{avaliacao.id}}/2">Não é mais útil</a></p>
                 
                 {% else %}
-                    <p class="botao-util"><a href="/achar-util/{{avaliacao.id}}/1">Achar útil</a></p>
+                    <p class="botao-util"><a href="/achar-util/{{avaliacao.id}}/2">Achar útil</a></p>
                 
                 {% endif %}
             </div>
             {% endfor %}
         
         {% else %}
-            <h3 style="color: red;">Este jogo ainda não possui avaliações, seja o primeiro a avaliar!</h3>
+            <h3 style="color: red;">Não temos avaliações ainda no site :(</h3>
 
         {% endif %}
     </div>
@@ -47,7 +41,6 @@
             background-color: black;
             color: white;
             width: 500px;
-            max-width: 500px;
             margin-left: auto;
             margin-right: auto;
             margin-top: 20px;
