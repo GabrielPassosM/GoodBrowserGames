@@ -42,7 +42,10 @@ class CadastroJogoForm(FlaskForm):
         ("adventure", "Adventure"),
     ]
 
-    categorias = list(Categoria.query.all())
+    try:
+        categorias = list(Categoria.query.all())
+    except:
+        categorias = None
 
     if categorias:
         for cat in categorias:
@@ -74,7 +77,10 @@ class FiltrarPorCategoriaForm(FlaskForm):
         ("adventure", "Adventure"),
     ]
 
-    categorias = list(Categoria.query.all())
+    try:
+        categorias = list(Categoria.query.all())
+    except:
+        categorias = None
 
     if categorias:
         for cat in categorias:
