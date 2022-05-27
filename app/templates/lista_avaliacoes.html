@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="container">
+        <h1 style="margin-bottom: 50px;">Avaliações de {{ jogo.nome }}</h1>
+        <div>
+            {% if avaliacao_feita %}
+                <p style="margin-bottom: 40px; font-size: large;"><a href="/editar-avaliacao/{{avaliacao_feita.id}}">Editar avaliação</a></p>
+            {% else %}
+                <p style="margin-bottom: 40px; font-size: large;"><a href="/fazer-avaliacao/{{jogo.id}}">Adicionar avaliação</a></p>
+            
+            {% endif %}
+        </div>
+        {% if avaliacoes %}
+            {% for avaliacao in avaliacoes %}
+            <div class="box-avaliacao">
+                <p>Estrelas: <span style="color: yellow; margin-right: 20px;">{{ avaliacao.estrelas }}</span>
+                    Qtd Útil: {{ avaliacao.qnt_util }}
+                </p>
+                <p style="text-align: left; margin: 10px;">{{ avaliacao.texto }}</p>
+                <p class="botao-util"><a href="/achar-util/{{avaliacao.id}}">Achar útil</a></p>
+            </div>
+            {% endfor %}
+        
+        {% else %}
+            <h3 style="color: red;">Este jogo ainda não possui avaliações, seja o primeiro a avaliar!</h3>
+
+        {% endif %}
+    </div>
+
+    <style>
+        
+        #container {
+            text-align: center;
+        }
+
+        .box-avaliacao {
+            border: 2px solid green;
+            border-radius: 10px;
+            background-color: black;
+            color: white;
+            width: 500px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .botao-util {
+            text-align: right;
+            margin-right: 15px;
+        }
+
+        .botao-util a:link{
+            color: red;
+        }
+
+        .botao-util a:visited{
+            color: red;
+        }
+
+    </style>
+{% endblock %}

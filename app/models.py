@@ -1,3 +1,4 @@
+from email.policy import default
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
@@ -34,7 +35,7 @@ class Avaliacao(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     estrelas = db.Column(db.Float, index=True)
     texto = db.Column(db.String(255))
-    qnt_util = db.Column(db.Integer, index=True)
+    qnt_util = db.Column(db.Integer, index=True, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     jogo_id = db.Column(db.Integer, db.ForeignKey('jogo.id'))
 

@@ -3,8 +3,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from flask.helpers import url_for
 from app import app, db
-from app.forms import CadastroJogoForm, CriarCategoria, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm, RegistrationForm
-from app.models import Categoria, Jogo, User
+from app.forms import CadastroJogoForm, CriarCategoria, FazerAvaliacao, FiltrarPorNomeForm, FiltrarPorCategoriaForm, LoginForm, RegistrationForm
+from app.models import Avaliacao, Categoria, Jogo, User
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -186,3 +186,65 @@ def editar_jogo(id):
         return redirect(url_for("index"))
 
     return render_template("edicao_jogo.html", form=form, nome_jogo=jogo.nome)
+
+
+@app.route("/listar-avaliacoes/<id>", methods=["GET", "POST"])
+def listar_avaliacoes(id):
+    avaliacoes = list(Avaliacao.query.filter_by(jogo_id=id))
+    jogo = Jogo.query.filter_by(id=id).first()
+    
+    avaliacao_pelo_usuario = Avaliacao.query.filter_by(jogo_id=id, user_id=current_user.id).first()
+    if avaliacao_pelo_usuario:
+        avaliacao_feita = avaliacao_pelo_usuario
+    else:
+        avaliacao_feita = None
+
+    return render_template("lista_avaliacoes.html", avaliacoes=avaliacoes, jogo=jogo, avaliacao_feita=avaliacao_feita)
+
+
+@app.route("/fazer-avaliacao/<jogo_id>", methods=["GET", "POST"])
+def fazer_avaliacao(jogo_id):
+    form = FazerAvaliacao()
+    jogo = Jogo.query.filter_by(id=jogo_id).first()
+    if request.method == "POST":
+        texto = form.texto.data
+        estrelas = form.estrelas.data
+        user_id = current_user.id
+
+        avaliacao = Avaliacao(
+            texto=texto,
+            estrelas=estrelas,
+            user_id=user_id,
+            jogo_id=jogo_id
+        )
+        db.session.add(avaliacao)
+        db.session.commit()
+        flash(f"Avaliação feita com sucesso!")
+        return redirect(url_for("listar_avaliacoes", id=jogo_id))
+    return render_template("fazer_avaliacao.html", form=form, jogo=jogo)
+
+
+@app.route("/editar-avaliacao/<id>", methods=["GET", "POST"])
+def editar_avaliacao(id, jogo):
+    avaliacao = Avaliacao.query.filter_by(id=id).first_or_404()
+    jogo = Jogo.query.filter_by(id=avaliacao.jogo_id).first()
+    form = FazerAvaliacao()
+    if request.method == "POST":
+        avaliacao.estrelas = form.estrelas.data
+        avaliacao.texto = form.texto.data
+        
+        db.session.add(avaliacao)
+        db.session.commit()
+        flash(f"Avaliação editada com sucesso!")
+        return redirect(url_for("listar_avaliacoes", id=jogo.id))
+
+    return render_template("edicao_avaliacao.html", form=form, nome_jogo=jogo.nome)
+
+
+@app.route("/achar-util/<id>", methods=["GET", "POST"])
+def achar_util(id):
+    avaliacao = Avaliacao.query.filter_by(id=id).first()
+    avaliacao.qnt_util += 1
+    db.session.add(avaliacao)
+    db.session.commit()
+    return redirect(url_for("listar_avaliacoes", id=avaliacao.jogo_id))

@@ -92,3 +92,17 @@ class CriarCategoria(FlaskForm):
         cat = Categoria.query.filter_by(nome=nome.data.lower()).first()
         if cat is not None:
             raise ValidationError('Categoria já existente!')
+
+
+class FazerAvaliacao(FlaskForm):
+    opcoes_de_estrelas = [
+        (1, "1"), 
+        (2, "2"),
+        (3, "3"),
+        (4, "4"),
+        (5, "5"),
+    ]
+
+    estrelas = SelectField("Estrelas", choices=opcoes_de_estrelas, validators=[DataRequired()])
+    texto = StringField("Texto:", validators=[DataRequired()])
+    submit = SubmitField("Salvar")

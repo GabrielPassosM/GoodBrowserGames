@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="container">
+        <h1>Editar sua avaliação do jogo {{ nome_jogo }}</h1>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.estrelas.label }}<br>
+                {{ form.estrelas }}<br>
+                {% for error in form.estrelas.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.texto.label }}<br>
+                {{ form.texto }}<br>
+                {% for error in form.texto.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+
+    <style>
+        #container {
+            text-align: center;
+        }
+    </style>
+{% endblock %}

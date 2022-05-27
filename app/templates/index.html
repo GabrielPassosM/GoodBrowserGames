@@ -29,7 +29,7 @@
             <p><b>Descrição:</b> {{ jogo.descricao }}</p>
             <p class="botoes"><a href="/editar-jogo/{{jogo.id}}">Editar</a></p>
             <p class="botoes"><a href="/delete-jogo/{{jogo.id}}">Excluir</a></p>
-            <p class="botoes"><a href="/">Avaliações</a></p>
+            <p class="botoes"><a href="/listar-avaliacoes/{{jogo.id}}">Avaliações</a></p>
         </div>
         {% endfor %}
     </div>
