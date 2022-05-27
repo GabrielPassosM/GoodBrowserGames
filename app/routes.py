@@ -74,6 +74,25 @@ def registrar():
     return render_template('cadastre_se.html', title='Cadastre-se', form=form)
 
 
+@app.route("/listar-categorias", methods=["GET", "POST"])
+def listar_categorias():
+    categorias_base = [
+        "Strategy", 
+        "Shooter",
+        "Puzzle",
+        "Arcade",
+        "RPG",
+        "Sports",
+        "Action",
+        "Adventure",
+    ]
+
+    categorias = list(Categoria.query.all())
+
+    return render_template("lista_categorias.html", categorias=categorias, padroes=categorias_base)
+
+
+
 @app.route("/criar-categoria", methods=["GET", "POST"])
 def criar_categoria():
     form = CriarCategoria()
@@ -86,8 +105,31 @@ def criar_categoria():
         db.session.add(categoria)
         db.session.commit()
         flash(f"Categoria {nome} cadastrada com sucesso!")
-        return redirect(url_for("index"))
+        return redirect(url_for("listar_categorias"))
     return render_template("criar_categoria.html", form=form)
+
+
+@app.route("/editar-categoria/<id>", methods=["GET", "POST"])
+def editar_categoria(id):
+    categoria = Categoria.query.filter_by(id=id).first_or_404()
+    nome_antigo = categoria.nome
+    form = CriarCategoria()
+    if request.method == "POST":
+        novo_nome = form.nome.data
+        categoria.nome = novo_nome
+        db.session.add(categoria)
+
+        jogos_dessa_cat = list(Jogo.query.filter_by(categoria=nome_antigo))
+        if jogos_dessa_cat:
+            for jogo in jogos_dessa_cat:
+                jogo.categoria = novo_nome
+                db.session.add(jogo)
+        
+        db.session.commit()
+        flash(f"Categoria {nome_antigo} editada para {novo_nome} com sucesso!")
+        return redirect(url_for("listar_categorias"))
+
+    return render_template("edicao_categoria.html", form=form, nome_antigo=nome_antigo)
 
 
 @app.route("/cadastrar-jogo", methods=["GET", "POST"])

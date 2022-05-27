@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div id="container">
+        <h1 style="margin-bottom: 50px;">Categorias</h1>
+        <div>
+            <p style="margin-bottom: 40px; font-size: large;"><a href="/criar-categoria">Adicionar categoria</a></p>
+        </div>
+        {% for cat in padroes %}
+        <div class="categoria">
+            <span>{{ cat }}</span>
+            <p style="display: inline; margin-left: 20px;"><b>Edição bloquada</b></p>
+        </div>
+        {% endfor %}
+        
+        {% if categorias %}
+            {% for cat in categorias %}
+            <div class="categoria">
+                <span>{{ cat.nome.capitalize() }}</span>
+                <p class="botoes"><a href="/editar-categoria/{{cat.id}}">Editar</a></p>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <style>
+        
+        #container {
+            text-align: center;
+        }
+
+        .categoria {
+            border: 1px solid green;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .botoes {
+            display: inline;
+            width: 48%;
+            margin-left: 30px;
+        }
+
+    </style>
+{% endblock %}
